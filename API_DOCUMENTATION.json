@@ -1,0 +1,161 @@
+{
+  "info": {
+    "name": "Scalable Task App API",
+    "description": "Complete API documentation for the Scalable Task App with Authentication & Dashboard",
+    "version": "1.0.0"
+  },
+  "baseUrl": "http://localhost:5000/api",
+  "endpoints": [
+    {
+      "method": "POST",
+      "path": "/auth/register",
+      "description": "Register a new user",
+      "headers": {
+        "Content-Type": "application/json"
+      },
+      "request": {
+        "name": "John Doe",
+        "email": "john@example.com",
+        "password": "password123"
+      },
+      "response": {
+        "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+      },
+      "statusCode": 200
+    },
+    {
+      "method": "POST",
+      "path": "/auth/login",
+      "description": "Login with email and password",
+      "headers": {
+        "Content-Type": "application/json"
+      },
+      "request": {
+        "email": "john@example.com",
+        "password": "password123"
+      },
+      "response": {
+        "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+      },
+      "statusCode": 200
+    },
+    {
+      "method": "GET",
+      "path": "/profile",
+      "description": "Get user profile (requires authentication)",
+      "headers": {
+        "Authorization": "Bearer <token>"
+      },
+      "response": {
+        "_id": "507f1f77bcf86cd799439011",
+        "name": "John Doe",
+        "email": "john@example.com"
+      },
+      "statusCode": 200
+    },
+    {
+      "method": "PUT",
+      "path": "/profile",
+      "description": "Update user profile",
+      "headers": {
+        "Authorization": "Bearer <token>",
+        "Content-Type": "application/json"
+      },
+      "request": {
+        "name": "John Updated",
+        "email": "john.updated@example.com"
+      },
+      "response": {
+        "_id": "507f1f77bcf86cd799439011",
+        "name": "John Updated",
+        "email": "john.updated@example.com"
+      },
+      "statusCode": 200
+    },
+    {
+      "method": "GET",
+      "path": "/tasks",
+      "description": "Get all tasks for the user",
+      "headers": {
+        "Authorization": "Bearer <token>"
+      },
+      "response": [
+        {
+          "_id": "507f1f77bcf86cd799439012",
+          "title": "Complete project",
+          "completed": false,
+          "createdAt": "2024-11-21T10:00:00Z"
+        },
+        {
+          "_id": "507f1f77bcf86cd799439013",
+          "title": "Review code",
+          "completed": true,
+          "createdAt": "2024-11-20T15:30:00Z"
+        }
+      ],
+      "statusCode": 200
+    },
+    {
+      "method": "POST",
+      "path": "/tasks",
+      "description": "Create a new task",
+      "headers": {
+        "Authorization": "Bearer <token>",
+        "Content-Type": "application/json"
+      },
+      "request": {
+        "title": "New task title"
+      },
+      "response": {
+        "_id": "507f1f77bcf86cd799439014",
+        "title": "New task title",
+        "completed": false,
+        "createdAt": "2024-11-21T11:00:00Z"
+      },
+      "statusCode": 200
+    },
+    {
+      "method": "PUT",
+      "path": "/tasks/:id",
+      "description": "Update a task",
+      "headers": {
+        "Authorization": "Bearer <token>",
+        "Content-Type": "application/json"
+      },
+      "request": {
+        "title": "Updated task title",
+        "completed": true
+      },
+      "response": {
+        "_id": "507f1f77bcf86cd799439014",
+        "title": "Updated task title",
+        "completed": true,
+        "createdAt": "2024-11-21T11:00:00Z"
+      },
+      "statusCode": 200
+    },
+    {
+      "method": "DELETE",
+      "path": "/tasks/:id",
+      "description": "Delete a task",
+      "headers": {
+        "Authorization": "Bearer <token>"
+      },
+      "response": {
+        "message": "Task deleted"
+      },
+      "statusCode": 200
+    }
+  ],
+  "errorResponses": {
+    "401": {
+      "message": "No token, authorization denied"
+    },
+    "400": {
+      "message": "Invalid credentials"
+    },
+    "500": {
+      "message": "Server error"
+    }
+  }
+}
