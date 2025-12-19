@@ -4,3 +4,10 @@ expertMode = true
 
 [nix]
 channel = "stable-25_05"
+
+[userenv]
+
+[userenv.shared]
+JWT_SECRET = "b11b27a278ec60a38accf26b9bb8cc4437151c2f2f32db094c0de1530636f1a0"
+BACKEND_PORT = "3000"
+VITE_API_URL = "/api"

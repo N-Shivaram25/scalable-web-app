@@ -1,30 +1,46 @@
 const express = require('express');
-const User = require('../models/User');
-const auth = require('../middleware/auth');
 const bcrypt = require('bcryptjs');
+const { db } = require('../db');
+const { users } = require('../db/schema');
+const { eq } = require('drizzle-orm');
+const auth = require('../middleware/auth');
 const router = express.Router();
 
-// Get profile
 router.get('/', auth, async (req, res) => {
   try {
-    const user = await User.findById(req.user.id).select('-password');
+    const [user] = await db.select({
+      id: users.id,
+      name: users.name,
+      email: users.email,
+      profileImage: users.profileImage,
+      coverPhoto: users.coverPhoto,
+      gender: users.gender,
+      mobileNumber: users.mobileNumber,
+      address: users.address,
+      qualification: users.qualification,
+      workStatus: users.workStatus,
+      theme: users.theme,
+      createdAt: users.createdAt,
+      updatedAt: users.updatedAt,
+    }).from(users).where(eq(users.id, req.user.id));
+    
+    if (!user) {
+      return res.status(404).json({ message: 'User not found' });
+    }
+    
     res.json(user);
   } catch (err) {
+    console.error('Get profile error:', err);
     res.status(500).json({ message: 'Server error' });
   }
 });
 
-// Update profile (all fields except password)
 router.put('/', auth, async (req, res) => {
   try {
     const { name, email, profileImage, coverPhoto, gender, mobileNumber, address, qualification, workStatus } = req.body;
     
-    console.log('Update profile request received for user:', req.user.id);
-    console.log('Update data:', { name, email, gender, mobileNumber, address, qualification, workStatus });
-    
-    const user = await User.findByIdAndUpdate(
-      req.user.id,
-      {
+    const [user] = await db.update(users)
+      .set({
         name,
         email,
         profileImage,
@@ -34,12 +50,25 @@ router.put('/', auth, async (req, res) => {
         address,
         qualification,
         workStatus,
-        updatedAt: new Date()
-      },
-      { new: true }
-    ).select('-password');
+        updatedAt: new Date(),
+      })
+      .where(eq(users.id, req.user.id))
+      .returning({
+        id: users.id,
+        name: users.name,
+        email: users.email,
+        profileImage: users.profileImage,
+        coverPhoto: users.coverPhoto,
+        gender: users.gender,
+        mobileNumber: users.mobileNumber,
+        address: users.address,
+        qualification: users.qualification,
+        workStatus: users.workStatus,
+        theme: users.theme,
+        createdAt: users.createdAt,
+        updatedAt: users.updatedAt,
+      });
     
-    console.log('Updated user:', user);
     res.json(user);
   } catch (err) {
     console.error('Profile update error:', err);
@@ -47,7 +76,6 @@ router.put('/', auth, async (req, res) => {
   }
 });
 
-// Change password
 router.post('/change-password', auth, async (req, res) => {
   try {
     const { currentPassword, newPassword } = req.body;
@@ -56,23 +84,25 @@ router.post('/change-password', auth, async (req, res) => {
       return res.status(400).json({ message: 'Current and new passwords are required' });
     }
     
-    const user = await User.findById(req.user.id);
-    const isMatch = await user.comparePassword(currentPassword);
+    const [user] = await db.select().from(users).where(eq(users.id, req.user.id));
+    const isMatch = await bcrypt.compare(currentPassword, user.password);
     
     if (!isMatch) {
       return res.status(400).json({ message: 'Current password is incorrect' });
     }
     
-    user.password = newPassword;
-    await user.save();
+    const hashedPassword = await bcrypt.hash(newPassword, 10);
+    await db.update(users)
+      .set({ password: hashedPassword, updatedAt: new Date() })
+      .where(eq(users.id, req.user.id));
     
     res.json({ message: 'Password changed successfully' });
   } catch (err) {
+    console.error('Change password error:', err);
     res.status(500).json({ message: 'Server error' });
   }
 });
 
-// Update theme preference
 router.put('/theme', auth, async (req, res) => {
   try {
     const { theme } = req.body;
@@ -81,19 +111,32 @@ router.put('/theme', auth, async (req, res) => {
       return res.status(400).json({ message: 'Invalid theme' });
     }
     
-    const user = await User.findByIdAndUpdate(
-      req.user.id,
-      { theme, updatedAt: new Date() },
-      { new: true }
-    ).select('-password');
+    const [user] = await db.update(users)
+      .set({ theme, updatedAt: new Date() })
+      .where(eq(users.id, req.user.id))
+      .returning({
+        id: users.id,
+        name: users.name,
+        email: users.email,
+        profileImage: users.profileImage,
+        coverPhoto: users.coverPhoto,
+        gender: users.gender,
+        mobileNumber: users.mobileNumber,
+        address: users.address,
+        qualification: users.qualification,
+        workStatus: users.workStatus,
+        theme: users.theme,
+        createdAt: users.createdAt,
+        updatedAt: users.updatedAt,
+      });
     
     res.json(user);
   } catch (err) {
+    console.error('Update theme error:', err);
     res.status(500).json({ message: 'Server error' });
   }
 });
 
-// Delete account
 router.delete('/', auth, async (req, res) => {
   try {
     const { password } = req.body;
@@ -102,17 +145,18 @@ router.delete('/', auth, async (req, res) => {
       return res.status(400).json({ message: 'Password is required to delete account' });
     }
     
-    const user = await User.findById(req.user.id);
-    const isMatch = await user.comparePassword(password);
+    const [user] = await db.select().from(users).where(eq(users.id, req.user.id));
+    const isMatch = await bcrypt.compare(password, user.password);
     
     if (!isMatch) {
       return res.status(400).json({ message: 'Password is incorrect' });
     }
     
-    await User.findByIdAndDelete(req.user.id);
+    await db.delete(users).where(eq(users.id, req.user.id));
     
     res.json({ message: 'Account deleted successfully' });
   } catch (err) {
+    console.error('Delete account error:', err);
     res.status(500).json({ message: 'Server error' });
   }
 });
