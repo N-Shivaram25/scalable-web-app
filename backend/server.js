@@ -1,6 +1,7 @@
 require('dotenv').config();
 const express = require('express');
 const cors = require('cors');
+const path = require('path');
 const authRoutes = require('./routes/auth');
 const taskRoutes = require('./routes/task');
 const profileRoutes = require('./routes/profile');
@@ -18,7 +19,16 @@ app.use('/api/tasks', taskRoutes);
 app.use('/api/profile', profileRoutes);
 app.use('/api/projects', projectRoutes);
 
-const PORT = process.env.BACKEND_PORT || 3000;
+if (process.env.NODE_ENV === 'production') {
+  app.use(express.static(path.join(__dirname, '../frontend/dist')));
+  app.get('*', (req, res) => {
+    if (!req.path.startsWith('/api')) {
+      res.sendFile(path.join(__dirname, '../frontend/dist', 'index.html'));
+    }
+  });
+}
+
+const PORT = process.env.NODE_ENV === 'production' ? 5000 : (process.env.BACKEND_PORT || 3000);
 
 async function initDatabase() {
   const client = await pool.connect();
