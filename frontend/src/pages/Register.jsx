@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Card, Alert } from '../components';
+import BackButton from '../components/BackButton';
 import './Register.css';
 
 const Register = ({ onSuccess, onClose }) => {
@@ -93,14 +94,23 @@ const Register = ({ onSuccess, onClose }) => {
 
   return (
     <div className={onSuccess ? 'register-modal' : 'register-container'}>
-      <Card className={onSuccess ? '' : ''}>
-        <div className="register-header">
-          <div className="register-icon">
-            <svg fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z" /></svg>
-          </div>
-          <h2 className="register-title">Join Us</h2>
-          <p className="register-subtitle">Create your account to get started</p>
+      <div className="auth-layout">
+        <div className="auth-left">
+          <div className="auth-left-brand">Nucleus</div>
+          <div className="auth-left-quote">“Simply all the tools that my team and I need.”</div>
+          <div className="auth-left-author">Karen Yui — Director of Digital Planning</div>
         </div>
+
+        <div className="auth-right">
+          <div className="auth-back"><BackButton /></div>
+          <Card className={onSuccess ? '' : ''}>
+            <div className="register-header">
+              <div className="register-icon">
+                <svg fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z" /></svg>
+              </div>
+              <h2 className="register-title">Join Us</h2>
+              <p className="register-subtitle">Create your account to get started</p>
+            </div>
         {error && <Alert message={error} type="error" onClose={() => setError('')} />}
         <form onSubmit={handleSubmit} className="register-form">
           <div className="form-group">
@@ -181,11 +191,13 @@ const Register = ({ onSuccess, onClose }) => {
             {loading ? 'Creating account...' : 'Create Account'}
           </button>
         </form>
-        <div className="register-footer">
-          <p>Already have an account? <button onClick={onClose} className="register-footer-link">Sign in</button></p>
-          {!onSuccess && <button onClick={() => navigate('/')} className="back-button">← Back to Home</button>}
+            <div className="register-footer">
+              <p>Already have an account? <button onClick={onClose} className="register-footer-link">Sign in</button></p>
+              {!onSuccess && <div className="footer-back"><BackButton /></div>}
+            </div>
+          </Card>
         </div>
-      </Card>
+      </div>
     </div>
   );
 };

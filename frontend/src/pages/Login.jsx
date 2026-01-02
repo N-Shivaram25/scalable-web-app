@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Card, Alert } from '../components';
+import BackButton from '../components/BackButton';
 import './Login.css';
 
 const Login = ({ onSuccess, onClose }) => {
@@ -70,14 +71,23 @@ const Login = ({ onSuccess, onClose }) => {
 
   return (
     <div className={onSuccess ? 'login-modal' : 'login-container'}>
-      <Card className={onSuccess ? '' : ''}>
-        <div className="login-header">
-          <div className="login-icon">
-            <svg fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M13 10V3L4 14h7v7l9-11h-7z" /></svg>
-          </div>
-          <h2 className="login-title">Welcome Back</h2>
-          <p className="login-subtitle">Sign in to access your tasks and profile</p>
+      <div className="auth-layout">
+        <div className="auth-left">
+          <div className="auth-left-brand">Nucleus</div>
+          <div className="auth-left-quote">“Simply all the tools that my team and I need.”</div>
+          <div className="auth-left-author">Karen Yui — Director of Digital Planning</div>
         </div>
+
+        <div className="auth-right">
+          <div className="auth-back"><BackButton /></div>
+          <Card className={onSuccess ? '' : ''}>
+            <div className="login-header">
+              <div className="login-icon">
+                <svg fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M13 10V3L4 14h7v7l9-11h-7z" /></svg>
+              </div>
+              <h2 className="login-title">Welcome Back</h2>
+              <p className="login-subtitle">Sign in to access your tasks and profile</p>
+            </div>
         {error && <Alert message={error} type="error" onClose={() => setError('')} />}
         <form onSubmit={handleSubmit} className="login-form">
           <div className="form-group">
@@ -121,11 +131,13 @@ const Login = ({ onSuccess, onClose }) => {
             {loading ? 'Signing in...' : 'Sign In'}
           </button>
         </form>
-        <div className="login-footer">
-          <p>Don't have an account? <button onClick={onClose} className="login-footer-link">Create one</button></p>
-          {!onSuccess && <button onClick={() => navigate('/')} className="back-button">← Back to Home</button>}
+            <div className="login-footer">
+              <p>Don't have an account? <button onClick={onClose} className="login-footer-link">Create one</button></p>
+              {!onSuccess && <div className="footer-back"><BackButton /></div>}
+            </div>
+          </Card>
         </div>
-      </Card>
+      </div>
     </div>
   );
 };

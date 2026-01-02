@@ -8,6 +8,90 @@
   padding: 20px;
 }
 
+.login-container, .register-container {
+  position: relative;
+}
+
+.auth-back {
+  position: absolute;
+  top: 24px;
+  left: 24px;
+  z-index: 1100;
+}
+
+.footer-back {
+  display: flex;
+  justify-content: center;
+}
+
+/* New split layout to match provided design */
+.auth-layout {
+  display: flex;
+  width: 100%;
+  max-width: 1100px;
+  min-height: 72vh;
+  background: white;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 20px 60px rgba(2,6,23,0.35);
+}
+
+.auth-left {
+  flex: 1 1 46%;
+  background-image: url('https://images.unsplash.com/photo-1524504388940-b1c1722653e1?q=80&w=1400&auto=format&fit=crop&ixlib=rb-4.0.3&s=');
+  background-size: cover;
+  background-position: center;
+  color: white;
+  padding: 40px 36px;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+}
+
+.auth-left::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(180deg, rgba(0,0,0,0.25), rgba(0,0,0,0.45));
+  pointer-events: none;
+}
+
+.auth-left-brand{
+  font-weight: 800;
+  font-size: 18px;
+  letter-spacing: 0.6px;
+  margin-bottom: 20px;
+}
+
+.auth-left-quote{
+  font-size: 20px;
+  font-weight: 700;
+  max-width: 320px;
+  z-index: 2;
+}
+
+.auth-left-author{
+  margin-top: 12px;
+  font-size: 13px;
+  color: rgba(255,255,255,0.85);
+  z-index: 2;
+}
+
+.auth-right{
+  flex: 1 1 54%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 48px;
+}
+
+.card {
+  width: 100%;
+  max-width: 420px;
+  border-radius: 12px;
+  padding: 36px;
+}
+
 .login-modal {
   background: rgba(0, 0, 0, 0.5);
   position: fixed;
@@ -246,7 +330,7 @@
 /* Responsive Design */
 @media (max-width: 640px) {
   .card {
-    padding: 32px 24px;
+    padding: 24px 18px;
   }
 
   .login-title {
@@ -265,4 +349,7 @@
     padding: 11px 14px;
     font-size: 16px; /* Prevents zoom on iOS */
   }
+  .auth-layout { flex-direction: column; max-width: 640px; min-height: auto; }
+  .auth-left { display: none; }
+  .auth-right { padding: 24px; }
 }
